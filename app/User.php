@@ -30,4 +30,14 @@ class User extends Authenticatable
     protected $hidden = [
         'password', 'remember_token',
     ];
+
+    public function businessInfo()
+    {
+        return $this->hasOne('App\BusinessInfo', 'user_id');
+    }
+
+    public function contactInfo()
+    {
+        return $this->hasOne('App\ContactInfo', 'user_id');
+    }
 }

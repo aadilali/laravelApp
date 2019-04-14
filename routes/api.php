@@ -50,7 +50,11 @@ Route::get('/get-user', 'UserController@index');
 Route::post('/login','Auth\LoginController@authenticate');
 
 Route::post('/register','Auth\RegisterController@create');
+Route::post('/register-vendor','Auth\RegisterController@createVendor');
 
 Route::get('/events/featured-list', 'EventsPostController@featuredList');
 Route::get('/events/{category}', 'EventsPostController@index');
+Route::get('/events/{category}/{subcategory}', 'EventsPostController@subcatEvents');
 Route::get('/events/{id}', 'EventsPostController@show');
+Route::get('/events-search/{searchText}', 'EventsPostController@searchEvents');
+

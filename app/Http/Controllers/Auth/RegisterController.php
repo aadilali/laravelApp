@@ -81,8 +81,54 @@ class RegisterController extends Controller
             'password' => Hash::make($data['password']),
         ]);
 
-        $user->assignRole('vendor');
+        $user->assignRole('customer');
             
+        return $user;
+    }
+
+    protected function createVendor(Request $request)
+    {
+        $data = $request->all();
+        // $errors = $this->validator($data)->errors();
+
+        // if(count($errors))
+        // {
+        //     return response()->json([
+        //         'message' => $errors
+        //     ], 400);
+        // }
+
+        $user = User::create([
+            'name' => $data['fullName'],
+            'email' => $data['email'],
+            'password' => Hash::make($data['password']),
+        ]);
+        $user->assignRole('vendor');
+        
+        $uploadedFile = null;
+        if ($files = $request->businessLogo) {
+            $destinationPath = public_path().'/uploads/business-logos/'; // upload path
+            $fileName = time().$files->getClientOriginalName();
+            $files->move($destinationPath, $fileName);
+            $uploadedFile = 'uploads/business-logos/'.$fileName;
+        }
+
+        $user->businessInfo()->create([
+            'company_name' => $data['companyName'],
+            'business_address' => $data['businessAddress'],
+            'business_website' => $data['businessWebsite'],
+            'business_phone' => $data['businessPhone'],
+            'business_type' => $data['businessType'],
+            'business_desc' => $data['businessDesc'],
+            'business_logo' => url('/').$uploadedFile
+        ]);
+        
+        $user->contactInfo()->create([
+            'contact_name' => $data['contactName'],
+            'contact_email' => $data['contactEmail'],
+            'contact_phone' => $data['contactPhone'],
+            'contact_position' => $data['contactPosition']
+        ]);
         return $user;
     }
 }

@@ -17,7 +17,34 @@ class EventsPostController extends Controller
     public function index($category)
     {
         // Display List of events
-        $events = EventsModel::where('category', $category)->get();
+        $events = EventsModel::where('product_type', $category)->get();
+        if(count($events) > 0)
+        {
+            return response(['status' => true, 'data' => $events], 200);
+        }
+        
+        return response(['status' => false, 'message' => 'Event not found!'], 200);
+    }
+    
+    public function subcatEvents($category, $subcategory)
+    {
+        // Display List of events
+        $events = EventsModel::where('product_type', $category)->where('product_category', $subcategory)->get();
+        if(count($events) > 0)
+        {
+            return response(['status' => true, 'data' => $events], 200);
+        }
+        
+        return response(['status' => false, 'message' => 'Event not found!'], 200);
+    }
+
+    public function searchEvents($searchText)
+    {
+        // Display List of events
+    //     BookingDates::where('email', Input::get('email'))
+    // ->orWhere('name', 'like', '%' . Input::get('name') . '%')->get();
+
+        $events = EventsModel::where('title', 'like', '%' .$searchText. '%')->get();
         if(count($events) > 0)
         {
             return response(['status' => true, 'data' => $events], 200);
@@ -65,6 +92,7 @@ class EventsPostController extends Controller
     {
         //Validate
         $data = $request->all();
+
         $errors = $this->validator($data)->errors();
         if(count($errors) > 0 )
         {
@@ -73,7 +101,7 @@ class EventsPostController extends Controller
 
         $uploadedFile = null;
         if ($files = $request->eventImages) {
-            $destinationPath = '/uploads/events-images/'; // upload path
+            $destinationPath = public_path().'/uploads/events-images/'; // upload path
             $fileName = time().$files->getClientOriginalName();
             $files->move($destinationPath, $fileName);
             $uploadedFile = $destinationPath.$fileName;
@@ -83,8 +111,15 @@ class EventsPostController extends Controller
             'title' => $data['eventTitle'],
             'desc'  => $data['eventDesc'],
             'price' => $data['eventPrice'],
-            'category' => $data['eventCat'],
-            'is_featured' => $data['isFeatured'],
+            'product_category' => $data['eventCat'],
+            'product_type'  => $data['eventType'],
+            'product_quantity'  =>$data['numberofProducts'],
+            'availablity'   => $data['eventAvailability'],
+            'setup_time'    => $data['setupTime'],
+            'product_options'   => $data['eventOptions'],
+            'product_includes'  => $data['eventIncludes'],
+            'product_logistics' => $data['eventLogistic'],
+            'product_fine_print'    => $data['eventFinePrint'],
             'author_id' => $request->auth->id,
             'image_url' => url('/').$uploadedFile
             ]);
